@@ -65,3 +65,7 @@ Batch [4|782] Batch loss: 0.8040367364883423, batch accuracy: 0.765625
 Batch [5|782] Batch loss: 0.6990523338317871, batch accuracy: 0.78125
 ```
 
+### Notes
+- The model may not be able achieve the same performance as they state in the paper. The authors first trained the model on JFT300M dataset and finetuned on smaller datasets.
+- The model takes a lot of data and GPU to train.
+- On small datasets the model overfits.
