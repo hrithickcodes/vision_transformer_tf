@@ -7,7 +7,7 @@ TRANSFORMERS FOR IMAGE RECOGNITION AT SCALE**. While the Transformer architectur
 language processing tasks, this paper used the transformer architecture and achived SOTA performance in image recognition.
 
 <div align="center">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Vision_Transformer.gif/800px-Vision_Transformer.gif" width="450" height = "290">
+    <img src="https://production-media.paperswithcode.com/methods/Screen_Shot_2021-01-26_at_9.43.31_PM_uI4jjMq.png" width="400" height = "290">
 </div>
 
 ## Setup
