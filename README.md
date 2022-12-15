@@ -1,5 +1,5 @@
 
-# Vision Transformer implementation in TensorFlow 2.x
+# TensorFlow implementation of Vision Transformer
 
 This repository is the unofficial implementation of the paper named 
 **AN IMAGE IS WORTH 16X16 WORDS:
