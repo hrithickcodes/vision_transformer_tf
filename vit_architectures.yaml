@@ -1,0 +1,43 @@
+ViT-BASE16: 
+    encoder_layers: 12
+    patch_embedding_dim: 768
+    units_in_mlp: 3072
+    attention_heads: 12
+    image_size: [384, 384, 3]
+    patch_size: 16
+    dropout_rate: 0.1
+    classes: 1000
+    class_activation: "sigmoid"
+
+ViT-BASE32: 
+    encoder_layers: 12
+    patch_embedding_dim: 768
+    units_in_mlp: 3072
+    attention_heads: 12
+    image_size: [384, 384, 3]
+    patch_size: 32
+    dropout_rate: 0.1
+    classes: 1000
+    class_activation: "sigmoid"
+
+ViT-LARGE16: 
+    encoder_layers: 24
+    patch_embedding_dim: 1024
+    units_in_mlp: 4096
+    attention_heads: 16
+    image_size: [384, 384, 3]
+    patch_size: 16
+    dropout_rate: 0.1
+    classes: 1000
+    class_activation: "sigmoid"
+
+ViT-LARGE32: 
+    encoder_layers: 24
+    patch_embedding_dim: 1024
+    units_in_mlp: 4096
+    attention_heads: 16
+    image_size: [384, 384, 3]
+    patch_size: 32
+    dropout_rate: 0.1
+    classes: 1000
+    class_activation: "sigmoid"

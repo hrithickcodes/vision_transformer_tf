@@ -1,0 +1,11 @@
+__pycache__
+layers/__pycache__
+utils/__pycache__
+
+dataset
+
+finetuning_weights/ViT-BASE16_cat_dog.data-00000-of-00001
+finetuning_weights/ViT-BASE16_cat_dog.index
+finetuning_weights/checkpoint
+
+*.npz

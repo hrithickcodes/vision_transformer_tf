@@ -1,2 +1,0 @@
-model_checkpoint_path: "cifar_viT"
-all_model_checkpoint_paths: "cifar_viT"

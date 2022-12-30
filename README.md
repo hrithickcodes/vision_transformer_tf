@@ -1,18 +1,15 @@
+# Vision Transformer in TensorFlow 2.x 🚀
 
-# TensorFlow implementation of Vision Transformer
-
-This repository is the unofficial implementation of the paper named 
-**AN IMAGE IS WORTH 16X16 WORDS:
-TRANSFORMERS FOR IMAGE RECOGNITION AT SCALE**. While the Transformer architecture has become the de-facto standard for natural
-language processing tasks, this paper used the transformer architecture and achived SOTA performance in image recognition.
+This repository contains code for the paper named [AN IMAGE IS WORTH 16X16 WORDS:
+TRANSFORMERS FOR IMAGE RECOGNITION AT SCALE](https://arxiv.org/pdf/2010.11929v1.pdf). This paper proves reliance on CNNs is not necessary, and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks, when pre-trained on large amounts of data.
 
 <div align="center">
-    <img src="https://production-media.paperswithcode.com/methods/Screen_Shot_2021-01-26_at_9.43.31_PM_uI4jjMq.png" width="400" height = "290">
+<a align="center" href="https://arxiv.org/pdf/2010.11929v1.pdf" target="_blank">
+<img width="800" src="images\model.jpg"></a>
 </div>
 
-## Setup
-The repository can be cloned using the below commands.
-
+### Setup
+Use the following commands to install all the necessary packages. A CUDA-enabled GPU is necessary for faster training and inference.
 
 ```
 git clone https://github.com/TheTensorDude/vision_transformer_tf.git
@@ -20,52 +17,96 @@ cd vision_transformer_tf
 pip install -r requirements.txt
 ```
 
+### Download pretrained weights
+Vision transformers were first trained on ImageNet21k and then it was finetuned on ImageNet1k. The weights are in .npz format and can be downloaded from this [gdrive folder](https://drive.google.com/drive/folders/110vr3yQb-_9e-b37DbRmyo07pa7Z_88h?usp=share_link) and put them inside the **pretrained_weights** folder.
 
-### Training vision transformer :metal:
-Before training the hyperparameters need to be set in the vit_config.yaml file.
+### Usage
+Once the setup is done, the pre-trained model can be loaded with just two lines of code. The available vit models sizes are **ViT-BASE16, ViT-BASE32, ViT-LARGE16, ViT-LARGE32**.
 
-```yaml 
-model_architecture:
-    image_size: [32, 32, 3]
-    patch_size: 2
-    patch_embedding_dim: 512
-    num_attention_heads: 8
-    num_transformer_encoder: 6
-    mlp_units: 512
-    dropout_rate: 0.1
-    model_name: cifar_viT
-
-
-training_settings:
-    epochs: 120
-    batch_size: 8
-    learning_rate: 0.0002 
-    save_plots: True
-    show_plots: False
-    
-save_paths:
-    model_save_path: model_weights
-    plot_save_path: runs
-```
-After configuring the YAML file the next step is to run the following command to start training the model. Note that, the model will start training on CIFAR-10 dataset by default.
-```
-python train_vision_transformer.py
+```python
+from vit import viT
+vit_large = viT(vit_size="ViT-LARGE32")
+vit_large.from_pretrained(pretrained_top=True)
 ```
 
-Output 
+Inference using ImageNet1k labels can be done using the following snippet of code.
+
+```python
+import os
+from vit import viT
+import tensorflow as tf
+from utils.general import load_imagenet_classes
+
+# loading imageNet1k classes
+classes = load_imagenet_classes(filepath=os.path.join("pretrained_weights","imagenet_2012.txt"))
+
+# intializing vit
+vit_large = viT(vit_size="ViT-BASE32")
+
+# loading pretrained weights
+vit_large.from_pretrained(pretrained_top=True)
+
+# loading and decoding the image
+image = tf.image.decode_jpeg(tf.io.read_file('goldfish.jpg'))
+
+# necessary imagenet preprocessing
+preprocessed_image = tf.expand_dims(vit_large.preprocess_input(image), axis = 0)
+
+# prediction using pretrained model
+output = vit_large.predict(preprocessed_image)
+
+print(f"Predicted class: {classes[output.argmax()]}")
+
+# Output: goldfish, Carassius auratus
+```
+
+
+### Finetuning on custom dataset
+
+The first step is to download the dataset into the datasets folder, then the finetuning can be started using the below command.
 
 ```
-Epoch: 6, Training accuracy: 0.65625, Training Loss: 0.9600569009780884, Test Loss: 1.1582378149032593, Test accuracy: 0.59375
+# finetuning the BASE16 size for 2 epochs on a custom dataset.
+python train.py \
+    --training-data dataset/training_set --test-data dataset/test_set \
+    --num-classes 2 \
+    --epochs 2 \
+    --batch-size 16 \
+    --vit-size ViT-BASE16 \
+    --model-name ViT-BASE16_cat_dog \
+    --save-training-stats 
+```
+output when finetuned to classify cat and dog.
+```
+Did not load the last top layer as pretrained_top=False
+
+Found 8005 files belonging to 2 classes.
+Found 2023 files belonging to 2 classes.
 
 
-Batch [1|782] Batch loss: 0.899474561214447, batch accuracy: 0.640625
-Batch [2|782] Batch loss: 0.6949890851974487, batch accuracy: 0.75
-Batch [3|782] Batch loss: 0.774124026298523, batch accuracy: 0.734375
-Batch [4|782] Batch loss: 0.8040367364883423, batch accuracy: 0.765625
-Batch [5|782] Batch loss: 0.6990523338317871, batch accuracy: 0.78125
+Epoch 1/2
+501/501 [==============================] - 1316s 3s/step - loss: 0.0512 - acc: 0.9763 - val_loss: 0.0153 - val_acc: 0.9970
+Epoch 2/2
+501/501 [==============================] - 1147s 2s/step - loss: 0.0037 - acc: 0.9989 - val_loss: 0.0150 - val_acc: 0.9975
+
+
+Accuracy results saved at runs/train-test-accuracy.png
+Loss results saved at runs/train-test-loss.png
 ```
 
-### Notes
-- The model may not be able achieve the same performance as they state in the paper. The authors first trained the model on JFT300M dataset and finetuned on smaller datasets.
-- The model takes a lot of data and GPU to train.
-- On small datasets the model overfits.
+### Converting to tflite
+
+Every vit model can be converted to tflite using this below command.
+
+```
+! python export_to_tflite.py --vit-size ViT-BASE16 \
+        --source-name ViT-BASE16_cat_dog \
+        --num-classes 2 \
+        --tflite-save-name cat_dog.tflite 
+```
+
+### Tasks
+- [ ] Adding a tutorial.
+- [ ] support for ImageNet21k weights.
+- [ ] Cosine decay learning rate for finetuning.
+- [ ] Add support for ViT-BASE8 and ViT-Hybrid.
