@@ -99,7 +99,7 @@ Loss results saved at runs/train-test-loss.png
 Every vit model can be converted to tflite using this below command.
 
 ```
-! python export_to_tflite.py --vit-size ViT-BASE16 \
+ python export_to_tflite.py --vit-size ViT-BASE16 \
         --source-name ViT-BASE16_cat_dog \
         --num-classes 2 \
         --tflite-save-name cat_dog.tflite 
