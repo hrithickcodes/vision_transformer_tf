@@ -5,7 +5,7 @@ import tensorflow as tf
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-weight_path = r"finetuning_weights\cat-fog-vit"
+weight_path = r"finetuning_weights\ViT-BASE16_cat_dog"
 class_indices_path = r"finetuning_weights\class_indices.json"
 
 with open(class_indices_path, 'r') as fp:
@@ -13,7 +13,6 @@ with open(class_indices_path, 'r') as fp:
 
 model = viT(vit_size="ViT-BASE16",
             num_classes=2,
-            include_top=False,
             class_activation="softmax")
 
 model.load_weights(weight_path)
